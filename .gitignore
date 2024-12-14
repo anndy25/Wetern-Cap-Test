@@ -41,6 +41,8 @@ testem.log
 .DS_Store
 Thumbs.db
 
+.vscode
+
 .nx/installation
 .nx/cache
 .nx/workspace-data
