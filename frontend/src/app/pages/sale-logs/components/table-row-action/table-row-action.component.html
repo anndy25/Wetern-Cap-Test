@@ -1,0 +1,22 @@
+<div
+  [matMenuTriggerFor]="menu"
+  class="flex items-center justify-center px-2 py-1 text-sm rounded-md cursor-pointer bg-neutral-200 w-fit"
+>
+  <div>Options</div>
+  <mat-icon>keyboard_arrow_down</mat-icon>
+</div>
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item>
+    <mat-icon>edit</mat-icon>
+    <span>Edit</span>
+  </button>
+  <button mat-menu-item>
+    <mat-icon>swap_horiz</mat-icon>
+    <span>{{ "Change Status to " + status }}</span>
+  </button>
+  <button mat-menu-item>
+    <mat-icon>delete</mat-icon>
+    <span>Delete</span>
+  </button>
+</mat-menu>

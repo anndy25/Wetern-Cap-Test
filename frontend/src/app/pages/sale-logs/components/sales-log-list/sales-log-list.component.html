@@ -1,0 +1,82 @@
+<div class="px-8">
+  <ng-container *ngTemplateOutlet="filterSection"></ng-container>
+  <ng-container *ngTemplateOutlet="tableSection"></ng-container>
+</div>
+
+<!-- filter template -->
+<ng-template #filterSection>
+  <div class="flex items-center h-20">
+    @if(filter){
+    <div>
+      <app-filter-card columnName="Task Type" filter="Call" />
+    </div>
+    }@else{
+    <div class="flex items-center text-sm text-neutral-900">
+      Use the
+      <mat-icon class="font-medium text-neutral-400">filter_alt</mat-icon> icon
+      next to the table title to apply filters
+    </div>
+    }
+  </div>
+</ng-template>
+
+<!-- table template -->
+<ng-template #tableSection>
+  <div class="overflow-x-auto">
+    <table class="text-sm table-fixed xl:w-full border-collaps">
+      <thead>
+        <tr>
+          @for (column of tableColumns; track $index) {
+          <th
+            class="font-normal text-start text-neutral-400"
+            [ngClass]="column.width ? column.width : ''"
+          >
+            <app-filter-menu [label]="column.name" [enableSort]="column.sort" />
+          </th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (logList of data; track $index) {
+        <tr>
+          <td colspan="8">
+            <div class="flex items-center py-2 text-xs gap-x-4">
+              <div class="font-semibold">12 Jan 2012</div>
+              <div class="text-neutral-400">
+                {{ "2023-12-14T00:00:00.000Z" | relativeDate }}
+              </div>
+              <div class="text-neutral-400">14 Open</div>
+              <div class="flex-1 border border-neutral-200 h-1/2"></div>
+            </div>
+          </td>
+        </tr>
+
+        <tr class="text-slate-800">
+          <td>
+            {{ "2023-12-15T20:30:00.000Z" | localDateTime : "DD/MM/YYYY" }}
+          </td>
+          <td class="text-sky-800">FlytBase Pvt</td>
+          <td>
+            <div class="flex items-center gap-x-1">
+              <mat-icon class="mb-1 text-xl">{{
+                taskTypeIcon[logList.taskType]
+              }}</mat-icon>
+              <span>{{ logList.taskType }}</span>
+            </div>
+          </td>
+          <td>{{ "2023-12-15T20:30:00.000Z" | localDateTime : "h:mm A" }}</td>
+          <td>Aniket Satish Mane</td>
+          <td class="pr-4 truncate">
+            dddddddddddddddddddddddd fffffffffffffffffffffff
+            sssssssssssssssssssss ddddddddddddd
+          </td>
+          <td [ngClass]="logList.status ? 'text-orange-500' : 'text-sky-800'">
+            {{ taskStatusTranslation[logList.status] }}
+          </td>
+          <td><app-table-row-action /></td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</ng-template>

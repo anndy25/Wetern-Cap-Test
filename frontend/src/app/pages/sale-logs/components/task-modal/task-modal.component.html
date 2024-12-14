@@ -1,0 +1,134 @@
+<div class="px-3 pb-3" [formGroup]="taskForm">
+  <mat-dialog-content>
+    <div class="flex flex-col gap-y-6">
+      <!-----------------------------top section --------------------->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between">
+          <div class="font-semibold">NEW TASK</div>
+        </div>
+        <mat-button-toggle-group
+          appearance="legacy"
+          [hideSingleSelectionIndicator]="true"
+          class="!shadow-none !rounded-md"
+          formControlName="status"
+        >
+          @for (option of statusOptions; track $index) {
+          <mat-button-toggle
+            [ngClass]="
+              option.value == taskForm.value.status
+                ? '!text-white !bg-orange-400'
+                : '!text-slate-600 !bg-neutral-200'
+            "
+            class="p-3"
+            [value]="option.value"
+          >
+            {{ option.label }}
+          </mat-button-toggle>
+          }
+        </mat-button-toggle-group>
+      </div>
+
+      <!----------------------------Form Fields ------------------------->
+      <div>
+        <div class="flex flex-col gap-y-5">
+          <!-- Entity Name -->
+
+          <mat-form-field class="w-full">
+            <input
+              matInput
+              placeholder="Entity name"
+              formControlName="entityName"
+            />
+          </mat-form-field>
+
+          <!-- Date Picker -->
+          <div class="flex pr-14 gap-x-4">
+            <mat-form-field>
+              <input
+                matInput
+                placeholder="Date"
+                formControlName="date"
+                [matDatepicker]="datepicker"
+              />
+              <mat-datepicker-toggle [for]="datepicker" matSuffix />
+              <mat-datepicker #datepicker />
+            </mat-form-field>
+
+            <mat-form-field>
+              <input
+                matInput
+                [matTimepicker]="timepicker"
+                [(ngModel)]="taskTime"
+                placeholder="Time"
+                [ngModelOptions]="{ standalone: true }"
+              />
+              <mat-timepicker #timepicker />
+              <mat-timepicker-toggle [for]="timepicker" matSuffix />
+            </mat-form-field>
+          </div>
+
+          <!-- Task Type -->
+          <mat-form-field>
+            <mat-select placeholder="Task type" formControlName="taskType">
+              <mat-option *ngFor="let task of taskTypes" [value]="task.type">
+                {{ task.type }}
+                <mat-icon>{{ task.icon }}</mat-icon>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Phone Number -->
+          <mat-form-field>
+            <input
+              matInput
+              type="text"
+              placeholder="Phone number"
+              formControlName="phoneNumber"
+            />
+          </mat-form-field>
+
+          <!-- Contact Person -->
+          <mat-form-field>
+            <input
+              matInput
+              placeholder="Contact person"
+              formControlName="contactPerson"
+            />
+          </mat-form-field>
+
+          <!-- Note -->
+          <mat-form-field>
+            <textarea
+              matInput
+              placeholder="Note (Optional)"
+              formControlName="note"
+              rows="4"
+            ></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <ng-container *ngTemplateOutlet="formActions"></ng-container>
+  </mat-dialog-actions>
+</div>
+
+<!-- Form Actions Section -->
+<ng-template #formActions>
+  <div class="mt-3 text-xs">
+    <button class="px-10 text-slate-800" mat-dialog-close>CANCEL</button>
+    <button
+      (click)="onSubmit()"
+      [ngClass]="
+        taskForm.invalid
+          ? '!text-slate-600 !bg-neutral-300'
+          : 'bg-sky-900 text-slate-100'
+      "
+      class="px-10 py-4 rounded-sm"
+    >
+      SAVE
+    </button>
+  </div>
+</ng-template>
