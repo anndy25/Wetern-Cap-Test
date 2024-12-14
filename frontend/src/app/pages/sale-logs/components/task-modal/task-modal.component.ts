@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import { TaskModel } from '../../interface/sale-logs.interface';
+import { TaskModel } from '../../interface/sales-log.interface';
 import { TaskStatus, TaskStatusTranslation } from '../../enum/sale-logs.eum';
 import {
   FormBuilder,
@@ -8,6 +8,8 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { Store } from '@ngxs/store';
+import { CreateSalesTask, UpdateSalesTask } from '../../state/sales-log.action';
 
 @Component({
   selector: 'app-task-modal',
@@ -40,6 +42,7 @@ export class TaskModalComponent implements OnInit {
   constructor(
     public _dialog: MatDialog,
     private fb: FormBuilder,
+    private _store: Store,
     @Inject(MAT_DIALOG_DATA) public taskInfo: TaskModel
   ) {}
   ngOnInit(): void {
@@ -60,13 +63,34 @@ export class TaskModalComponent implements OnInit {
       ]),
       phoneNumber: new FormControl(this.taskInfo?.phoneNumber ?? '', [
         Validators.required,
-        Validators.pattern(/^[0-9]{10}$/),
+        Validators.pattern(/^[0-9]{10,15}$/),
       ]),
       note: new FormControl(this.taskInfo?.note ?? ''),
     });
+    this.taskTime = this.taskInfo?.date ?? '';
   }
 
   onSubmit() {
-    console.log(this.taskForm);
+    if (this.taskInfo) {
+      this.createTask();
+    } else {
+      this.updateTask();
+    }
+  }
+
+  createTask() {
+    this._store
+      .dispatch(
+        new CreateSalesTask({ ...this.taskForm.value, date: this.taskForm })
+      )
+      .subscribe({ next: () => {}, error: (err) => {} });
+  }
+
+  updateTask() {
+    this._store
+      .dispatch(
+        new UpdateSalesTask({ ...this.taskForm.value, date: this.taskForm })
+      )
+      .subscribe({ next: () => {}, error: (err) => {} });
   }
 }

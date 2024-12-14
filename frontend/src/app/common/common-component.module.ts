@@ -18,6 +18,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { FilterMenuComponent } from './filter-menu/filter-menu.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [FilterCardComponent, InputComponent, FilterMenuComponent],
@@ -31,6 +32,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
   providers: [InputComponent],
   exports: [
     FormsModule,
+    HttpClientModule,
     MatFormFieldModule,
     MatInputModule,
     MatDatepickerModule,

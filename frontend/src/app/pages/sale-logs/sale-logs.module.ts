@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SaleLogsComponent } from './sale-logs.component';
+import { SalesLogComponent } from './sale-logs.component';
 import { SalesLogActionComponent } from './components/sales-log-action/sales-log-action.component';
 import { CommonComponentsModule } from '../../common/common-component.module';
 import { SalesLogListComponent } from './components/sales-log-list/sales-log-list.component';
@@ -9,10 +9,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
 import { RelativeDatePipe } from '../../pipe/relative-date.pipe';
 import { LocalDateTimePipe } from '../../pipe/local-date.pipe';
+import { SalesLogState } from './state/sales-log.state';
+import { NgxsModule } from '@ngxs/store';
 
 @NgModule({
   declarations: [
-    SaleLogsComponent,
+    SalesLogComponent,
     SalesLogActionComponent,
     SalesLogListComponent,
     TaskModalComponent,
@@ -25,7 +27,10 @@ import { LocalDateTimePipe } from '../../pipe/local-date.pipe';
     MatIconModule,
     CommonComponentsModule,
     LocalDateTimePipe,
+    NgxsModule.forRoot([SalesLogState], {
+      compatibility: { strictContentSecurityPolicy: true },
+    }),
   ],
-  exports: [SaleLogsComponent],
+  exports: [SalesLogComponent],
 })
-export class SaleLogsModule {}
+export class SalesLogModule {}

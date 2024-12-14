@@ -4,7 +4,7 @@
       <!-----------------------------top section --------------------->
       <div class="flex items-center justify-between">
         <div class="flex items-center justify-between">
-          <div class="font-semibold">NEW TASK</div>
+          <div class="font-semibold">{{ taskInfo ? "UPATE" : "NEW TASK" }}</div>
         </div>
         <mat-button-toggle-group
           appearance="legacy"
@@ -47,6 +47,7 @@
               <input
                 matInput
                 placeholder="Date"
+                [(ngModel)]="taskTime"
                 formControlName="date"
                 [matDatepicker]="datepicker"
               />
@@ -128,7 +129,7 @@
       "
       class="px-10 py-4 rounded-sm"
     >
-      SAVE
+      {{ taskInfo ? "UPDATE" : " SAVE" }}
     </button>
   </div>
 </ng-template>
