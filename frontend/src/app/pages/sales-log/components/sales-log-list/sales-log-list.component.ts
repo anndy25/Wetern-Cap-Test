@@ -48,6 +48,7 @@ export class SalesLogListComponent implements OnInit, OnDestroy {
       id: ColumnIds.DATE,
       name: 'Date',
       sort: true,
+      width: 'w-[140px]',
     },
     {
       id: ColumnIds.ENTITY_NAME,
@@ -65,7 +66,7 @@ export class SalesLogListComponent implements OnInit, OnDestroy {
     {
       id: ColumnIds.TIME,
       name: 'Time',
-      width: 'w-[120px]',
+      width: 'w-[140px]',
     },
     {
       id: ColumnIds.CONTACT_PERSON,
@@ -78,12 +79,12 @@ export class SalesLogListComponent implements OnInit, OnDestroy {
       name: 'Notes',
       sort: false,
       filter: false,
-      width: 'w-1/4',
+      width: 'w-1/3',
     },
     {
       id: ColumnIds.STATUS,
       name: 'Status',
-      width: 'w-[110px]',
+      width: 'w-[120px]',
       sort: true,
       filter: true,
     },
