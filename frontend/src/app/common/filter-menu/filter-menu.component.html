@@ -5,11 +5,13 @@
     <mat-icon
       *ngIf="options?.length"
       [matMenuTriggerFor]="menu"
-      class="relative flex justify-center text-lg font-medium rounded-full cursor-pointer left-1"
+      class="relative flex justify-center text-lg font-medium rounded-full cursor-pointer left-1 hover:text-neutral-800"
       >filter_alt</mat-icon
     >
 
-    <mat-icon *ngIf="enableSort" class="text-xl font-medium cursor-pointer"
+    <mat-icon
+      *ngIf="enableSort"
+      class="text-xl font-medium cursor-pointer hover:text-neutral-800"
       >arrow_upward</mat-icon
     >
   </div>

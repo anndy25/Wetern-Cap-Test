@@ -1,7 +1,7 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TaskModel } from '../../interface/sales-log.interface';
-import { TaskStatus, TaskStatusTranslation } from '../../enum/sale-logs.eum';
+import { TaskStatus, TaskStatusTranslation } from '../../enum/sales-log.eum';
 import {
   FormBuilder,
   FormControl,

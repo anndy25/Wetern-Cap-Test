@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   ColumnIds,
   RowActionsSet,
@@ -6,37 +6,44 @@ import {
   TaskStatusTranslation,
   TaskTypeIcon,
   ColumnNames,
-} from '../../enum/sale-logs.eum';
+} from '../../enum/sales-log.eum';
 import { Store } from '@ngxs/store';
 import {
   ChangeTaskStatus,
   DeleteSalesTaskLog,
+  FetchSalesLogFilters,
   RemoveFilterOption,
+  UpdateAppliedSalesLogFilters,
 } from '../../state/sales-log.action';
 import { TaskModalComponent } from '../task-modal/task-modal.component';
 import { MatDialog } from '@angular/material/dialog';
-import { SalesTaskList, TaskModel } from '../../interface/sales-log.interface';
+import {
+  SalesTaskList,
+  TableColumn,
+  TaskModel,
+} from '../../interface/sales-log.interface';
 import { Subscription, tap } from 'rxjs';
 import { SalesLogState } from '../../state/sales-log.state';
+import { FilterOption } from '../../../../interfaces/filter-menu.interface';
 
 @Component({
   selector: 'app-sales-log-list',
   standalone: false,
   templateUrl: './sales-log-list.component.html',
 })
-export class SalesLogListComponent implements OnInit {
-  subs = new Subscription();
-  taskStatusTranslation = TaskStatusTranslation;
+export class SalesLogListComponent implements OnInit, OnDestroy {
   taskTypeIcon = TaskTypeIcon;
   taskStatus = TaskStatus;
   columnIds = ColumnIds;
-  columnNames = ColumnNames;
-  tableList: SalesTaskList[] = [];
-  appliedFilterList = {};
-  updateListFlag = false;
-  isFilterApplied = false;
   object = Object;
-  tableColumns = [
+  columnNames = ColumnNames;
+  taskStatusTranslation = TaskStatusTranslation;
+  subs = new Subscription();
+  tableList: SalesTaskList[] = [];
+  salesFiltersOptions = {} as Record<ColumnIds, any>;
+  appliedFilterList = {} as Record<ColumnIds, any>;
+  isFilterApplied = false;
+  tableColumns: TableColumn[] = [
     {
       id: ColumnIds.DATE,
       name: 'Date',
@@ -51,13 +58,14 @@ export class SalesLogListComponent implements OnInit {
     {
       id: ColumnIds.TASK_TYPE,
       name: 'Task Type',
-      taskType: 0,
       sort: true,
       filter: true,
+      width: 'w-[140px]',
     },
     {
+      id: ColumnIds.TIME,
       name: 'Time',
-      sort: true,
+      width: 'w-[120px]',
     },
     {
       id: ColumnIds.CONTACT_PERSON,
@@ -66,6 +74,7 @@ export class SalesLogListComponent implements OnInit {
       filter: true,
     },
     {
+      id: ColumnIds.NOTES,
       name: 'Notes',
       sort: false,
       filter: false,
@@ -74,10 +83,12 @@ export class SalesLogListComponent implements OnInit {
     {
       id: ColumnIds.STATUS,
       name: 'Status',
+      width: 'w-[110px]',
       sort: true,
       filter: true,
     },
     {
+      id: ColumnIds.EMTY,
       name: '',
       sort: false,
       filter: false,
@@ -93,6 +104,7 @@ export class SalesLogListComponent implements OnInit {
 
   ngOnInit(): void {
     this.setTableData();
+    this.fetchSalesLogFilter();
   }
 
   rowActions(id: number, data: TaskModel) {
@@ -121,14 +133,12 @@ export class SalesLogListComponent implements OnInit {
   private setTableData() {
     this.subs.add(
       this._store.select(SalesLogState.getSalesLog).subscribe((list) => {
-        if (this.updateListFlag) {
-          this.tableList = list;
-        }
+        this.tableList = list;
       })
     );
     this.subs.add(
       this._store
-        .select(SalesLogState.getFilterList)
+        .select(SalesLogState.getAppliedFilter)
         .pipe(
           tap(
             (filter) =>
@@ -151,8 +161,28 @@ export class SalesLogListComponent implements OnInit {
           )
         )
         .subscribe((filters) => {
-          this.appliedFilterList = { ...filters };
+          this.appliedFilterList = { ...filters } as Record<ColumnIds, any>;
         })
+    );
+  }
+
+  private fetchSalesLogFilter() {
+    this._store.dispatch(new FetchSalesLogFilters());
+    this.subs.add(
+      this._store
+        .select(SalesLogState.getSalesFilterOptions)
+        .subscribe((salesFilters) => {
+          this.salesFiltersOptions = salesFilters as Record<ColumnIds, any>;
+        })
+    );
+  }
+
+  onSelectedFilters(options: FilterOption[], columnId: string) {
+    this._store.dispatch(
+      new UpdateAppliedSalesLogFilters({ [columnId]: options } as Record<
+        ColumnIds,
+        any
+      >)
     );
   }
 
@@ -172,5 +202,9 @@ export class SalesLogListComponent implements OnInit {
       data,
     });
     dialogRef.afterClosed().subscribe();
+  }
+
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
   }
 }

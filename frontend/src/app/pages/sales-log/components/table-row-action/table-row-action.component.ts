@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { RowActionsSet } from '../../enum/sale-logs.eum';
+import { RowActionsSet } from '../../enum/sales-log.eum';
 
 @Component({
   selector: 'app-table-row-action',

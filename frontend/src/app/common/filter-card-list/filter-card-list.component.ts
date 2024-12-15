@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   ColumnIds,
   ColumnNames,
-} from '../../pages/sale-logs/enum/sale-logs.eum';
+} from '../../pages/sales-log/enum/sales-log.eum';
 import moment from 'moment';
 
 @Component({

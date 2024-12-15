@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SalesLogModule } from './sale-logs/sale-logs.module';
+import { SalesLogModule } from './sales-log/sales-log.module';
 
 @NgModule({
   declarations: [],

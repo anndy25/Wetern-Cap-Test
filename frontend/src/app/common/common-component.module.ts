@@ -19,6 +19,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { FilterMenuComponent } from './filter-menu/filter-menu.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HttpClientModule } from '@angular/common/http';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   declarations: [FilterCardListComponent, InputComponent, FilterMenuComponent],
@@ -27,6 +28,7 @@ import { HttpClientModule } from '@angular/common/http';
     BrowserAnimationsModule,
     MatIconModule,
     MatMenuModule,
+    MatCardModule,
     MatCheckboxModule,
   ],
   providers: [InputComponent],
@@ -41,6 +43,7 @@ import { HttpClientModule } from '@angular/common/http';
     MatTimepickerModule,
     MatButtonModule,
     MatMenuModule,
+    MatCardModule,
     MatDialogModule,
     MatIconModule,
     ReactiveFormsModule,

@@ -7,6 +7,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { FilterOption } from '../../interfaces/filter-menu.interface';
+import { SortingOrder } from '../../pages/sales-log/interface/sales-log.interface';
 
 @Component({
   selector: 'app-filter-menu',
@@ -18,8 +19,9 @@ export class FilterMenuComponent implements OnChanges {
   @Input() enableSort = false;
   @Input() options: FilterOption[] = [];
   @Input() defaultOptions: FilterOption[] = [];
-
-  @Output() onClosed = new EventEmitter<FilterOption[]>();
+  @Input() sortBy = false;
+  @Input() sortingOrder = SortingOrder;
+  @Output() closeFilterMenu = new EventEmitter<FilterOption[]>();
   selectedItems = new Set<number | string>();
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -58,6 +60,6 @@ export class FilterMenuComponent implements OnChanges {
       }
     }
 
-    this.onClosed.emit(responseArray);
+    this.closeFilterMenu.emit(responseArray);
   }
 }

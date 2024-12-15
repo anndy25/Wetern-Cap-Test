@@ -15,6 +15,9 @@ export enum ColumnIds {
   TASK_TYPE = 'taskType',
   CONTACT_PERSON = 'contactPerson',
   STATUS = 'status',
+  TIME = 'time',
+  NOTES = 'notices',
+  EMTY = 'emty',
 }
 
 export const ColumnNames: { [key: string]: string } = {

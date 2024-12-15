@@ -8,17 +8,18 @@ import {
   SelectedFilters,
   SortingOrder,
 } from '../interface/sales-log.interface';
-import { ColumnIds } from '../enum/sale-logs.eum';
+import { ColumnIds } from '../enum/sales-log.eum';
 import {
+  ChangeTaskStatus,
   CreateSalesTask,
   DeleteSalesTaskLog,
   FetchSalesTaskLogs,
   RemoveFilterOption,
-  UpdateSalesLogFilters,
+  UpdateAppliedSalesLogFilters,
   UpdateSalesLogParameter,
 } from './sales-log.action';
 import { patch, removeItem } from '@ngxs/store/operators';
-import { SalesLogService } from '../services/sale-logs.service';
+import { SalesLogService } from '../services/sales-log.service';
 import { catchError, tap } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { FilterOption } from '../../../interfaces/filter-menu.interface';
@@ -29,7 +30,13 @@ const InitialState: SalesLogStateModel = {
     sortingOrder: SortingOrder.ASC,
     search: '',
   },
-  selectedFilters: {
+  filterOptions: {
+    entityName: [],
+    taskType: [],
+    contactPerson: [],
+    status: [],
+  },
+  appliedFilters: {
     entityName: [],
     date: { startAt: '', endAt: '' },
     taskType: [],
@@ -48,8 +55,8 @@ export class SalesLogState {
   saleLogService = inject(SalesLogService);
 
   @Selector()
-  static getFilterList(state: SalesLogStateModel) {
-    return state.selectedFilters;
+  static getAppliedFilter(state: SalesLogStateModel) {
+    return state.appliedFilters;
   }
 
   @Selector()
@@ -62,9 +69,14 @@ export class SalesLogState {
     return state.logs;
   }
 
+  @Selector()
+  static getSalesFilterOptions(state: SalesLogStateModel) {
+    return state.filterOptions;
+  }
+
   @Action(FetchSalesTaskLogs)
   FetchSalesLog(ctx: StateContext<SalesLogStateModel>, _: FetchSalesTaskLogs) {
-    const { parameters, selectedFilters } = ctx.getState();
+    const { parameters, appliedFilters: selectedFilters } = ctx.getState();
     const filters: SelectedFilters = {
       entityNames: selectedFilters.entityName.map((entity) => entity.value),
       date: selectedFilters.date,
@@ -126,10 +138,10 @@ export class SalesLogState {
     });
   }
 
-  @Action(UpdateSalesLogFilters)
-  UpdateSalesLogFilters(
+  @Action(UpdateAppliedSalesLogFilters)
+  UpdateAppliedSalesLogFilters(
     ctx: StateContext<SalesLogStateModel>,
-    action: UpdateSalesLogFilters
+    action: UpdateAppliedSalesLogFilters
   ) {
     const propertyName = Object.keys(
       action.logsFilters
@@ -137,7 +149,7 @@ export class SalesLogState {
 
     ctx.setState(
       patch({
-        selectedFilters: patch({
+        appliedFilters: patch({
           [propertyName]: action.logsFilters[propertyName],
         }),
       })
@@ -170,12 +182,12 @@ export class SalesLogState {
   ) {
     if (action.columnId === ColumnIds.DATE) {
       ctx.setState(
-        patch({ selectedFilters: patch({ date: { startAt: '', endAt: '' } }) })
+        patch({ appliedFilters: patch({ date: { startAt: '', endAt: '' } }) })
       );
     } else {
       ctx.setState(
         patch({
-          selectedFilters: patch({
+          appliedFilters: patch({
             [action.columnId]: removeItem<FilterOption>(
               (option) => option.value === action.value
             ),
@@ -183,6 +195,14 @@ export class SalesLogState {
         })
       );
     }
+    ctx.dispatch(new FetchSalesTaskLogs());
+  }
+
+  @Action(ChangeTaskStatus)
+  changeTaskStatus(
+    ctx: StateContext<SalesLogStateModel>,
+    action: ChangeTaskStatus
+  ) {
     ctx.dispatch(new FetchSalesTaskLogs());
   }
 }

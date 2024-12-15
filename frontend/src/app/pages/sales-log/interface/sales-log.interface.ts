@@ -1,9 +1,17 @@
 import { FilterOption } from '../../../interfaces/filter-menu.interface';
-import { ColumnIds as SortBy } from '../enum/sale-logs.eum';
+import { ColumnIds, ColumnIds as SortBy } from '../enum/sales-log.eum';
 
 export enum SortingOrder {
   ASC,
   DES,
+}
+
+export interface TableColumn {
+  id: ColumnIds;
+  name: string;
+  sort?: boolean;
+  filter?: boolean;
+  width?: string;
 }
 
 export interface LogParameters {
@@ -52,6 +60,7 @@ export interface SalesTaskList {
 
 export interface SalesLogStateModel {
   parameters: LogParameters;
-  selectedFilters: SalesLogFilters;
+  appliedFilters: SalesLogFilters;
+  filterOptions: Partial<SalesLogFilters>;
   logs: SalesTaskList[] | [];
 }

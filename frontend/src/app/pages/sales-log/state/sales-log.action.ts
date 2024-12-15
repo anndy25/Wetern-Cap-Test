@@ -1,4 +1,4 @@
-import { ColumnIds } from '../enum/sale-logs.eum';
+import { ColumnIds } from '../enum/sales-log.eum';
 import {
   LogParameters,
   SalesLogFilters,
@@ -37,7 +37,11 @@ export class ChangeTaskStatus {
   constructor(public readonly taskId: string, public readonly status: number) {}
 }
 
-export class UpdateSalesLogFilters {
+export class FetchSalesLogFilters {
+  static readonly type = '[Sales Log] Fetch Sales Log Filters';
+}
+
+export class UpdateAppliedSalesLogFilters {
   static readonly type = '[Sales Log] Update Sale Log Filters';
   constructor(public readonly logsFilters: SalesLogFilters) {}
 }

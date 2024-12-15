@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SalesLogComponent } from './sale-logs.component';
+import { SalesLogComponent } from './sales-log.component';
 import { SalesLogActionComponent } from './components/sales-log-action/sales-log-action.component';
 import { CommonComponentsModule } from '../../common/common-component.module';
 import { SalesLogListComponent } from './components/sales-log-list/sales-log-list.component';

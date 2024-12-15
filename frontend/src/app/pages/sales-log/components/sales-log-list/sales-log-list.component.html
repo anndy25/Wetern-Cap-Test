@@ -37,7 +37,13 @@
             class="font-normal text-start text-neutral-400"
             [ngClass]="column.width ? column.width : ''"
           >
-            <app-filter-menu [label]="column.name" [enableSort]="column.sort" />
+            <app-filter-menu
+              [label]="column.name"
+              [enableSort]="!!column?.sort"
+              [defaultOptions]="appliedFilterList[column.id]"
+              [options]="salesFiltersOptions[column.id]"
+              (closeFilterMenu)="onSelectedFilters($event, column.id)"
+            />
           </th>
           }
         </tr>
