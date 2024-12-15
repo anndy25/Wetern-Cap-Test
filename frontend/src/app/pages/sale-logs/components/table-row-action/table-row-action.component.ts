@@ -1,4 +1,5 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { RowActionsSet } from '../../enum/sale-logs.eum';
 
 @Component({
   selector: 'app-table-row-action',
@@ -8,4 +9,11 @@ import { Component, Input } from '@angular/core';
 })
 export class TableRowActionComponent {
   @Input() status = 'Closed';
+  @Output() selectedMenuItem = new EventEmitter<number>();
+
+  rowActions = RowActionsSet;
+
+  onMenuClick(item: RowActionsSet) {
+    this.selectedMenuItem.emit(item);
+  }
 }

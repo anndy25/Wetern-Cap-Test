@@ -9,5 +9,12 @@
       <span class="mx-3">New Task</span>
     </button>
   </div>
-  <app-input class="w-2/6" placeHolder="Search" />
+  <app-input
+    class="w-2/6"
+    placeHolder="Search"
+    debounceChange
+    [debounceDelay]="1000"
+    (debouncedInputChange)="onSearchChange($event)"
+    placeholder="Type to search"
+  />
 </div>

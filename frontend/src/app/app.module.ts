@@ -3,9 +3,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MatInputModule } from '@angular/material/input';
-import { PagesModule } from './pages/pages.module';
+
 import { HeaderComponent } from './components/header/header.component';
-import { RelativeDatePipe } from './pipe/relative-date.pipe';
+
+import { DebounceChangeDirective } from './directives/debounce-change.directive';
+import { PagesModule } from './pages/pages.module';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent],

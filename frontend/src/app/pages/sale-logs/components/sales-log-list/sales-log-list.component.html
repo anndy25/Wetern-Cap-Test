@@ -5,11 +5,17 @@
 
 <!-- filter template -->
 <ng-template #filterSection>
-  <div class="flex items-center h-20">
-    @if(filter){
-    <div>
-      <app-filter-card columnName="Task Type" filter="Call" />
-    </div>
+  <div class="flex flex-wrap items-center w-full py-2 gap-y-2 min-h-20">
+    @if(isFilterApplied){
+    <app-filter-card-list
+      *ngFor="let item of appliedFilterList | keyvalue"
+      [columnId]="item.key"
+      [filters]="
+        item.key === columnIds.DATE ? object.values(item.value) : item.value
+      "
+      (removedFilter)="removeFilter(item.key, $event)"
+    />
+
     }@else{
     <div class="flex items-center text-sm text-neutral-900">
       Use the
@@ -73,7 +79,16 @@
           <td [ngClass]="logList.status ? 'text-orange-500' : 'text-sky-800'">
             {{ taskStatusTranslation[logList.status] }}
           </td>
-          <td><app-table-row-action /></td>
+          <td>
+            <app-table-row-action
+              (selectedMenuItem)="rowActions($event, logList)"
+              [status]="
+                logList.status
+                  ? taskStatusTranslation[taskStatus.CLOSED]
+                  : taskStatusTranslation[taskStatus.OPEN]
+              "
+            />
+          </td>
         </tr>
         }
       </tbody>

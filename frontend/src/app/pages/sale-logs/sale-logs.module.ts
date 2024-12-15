@@ -11,6 +11,7 @@ import { RelativeDatePipe } from '../../pipe/relative-date.pipe';
 import { LocalDateTimePipe } from '../../pipe/local-date.pipe';
 import { SalesLogState } from './state/sales-log.state';
 import { NgxsModule } from '@ngxs/store';
+import { DebounceChangeDirective } from '../../directives/debounce-change.directive';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { NgxsModule } from '@ngxs/store';
     TaskModalComponent,
     TableRowActionComponent,
     RelativeDatePipe,
+    DebounceChangeDirective,
   ],
   providers: [SalesLogActionComponent, TaskModalComponent],
   imports: [

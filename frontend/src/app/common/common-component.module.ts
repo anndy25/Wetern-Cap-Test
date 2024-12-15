@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FilterCardComponent } from './filter-card/filter-card.component';
+import { FilterCardListComponent } from './filter-card-list/filter-card-list.component';
 import { InputComponent } from './input/input.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -21,7 +21,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
-  declarations: [FilterCardComponent, InputComponent, FilterMenuComponent],
+  declarations: [FilterCardListComponent, InputComponent, FilterMenuComponent],
   imports: [
     CommonModule,
     BrowserAnimationsModule,
@@ -47,7 +47,7 @@ import { HttpClientModule } from '@angular/common/http';
     MatButtonToggleModule,
     InputComponent,
     FilterMenuComponent,
-    FilterCardComponent,
+    FilterCardListComponent,
     MatCheckboxModule,
   ],
 })

@@ -24,7 +24,11 @@
     </div>
     <ng-container *ngFor="let option of options; let i = index">
       <button mat-menu-item>
-        <mat-checkbox class="flex items-center">
+        <mat-checkbox
+          class="flex items-center"
+          [checked]="selectedItems.has(option.value)"
+          (change)="onCheckboxChange(option.value)"
+        >
           <div class="flex items-center">
             <mat-icon *ngIf="option.icon">{{ option.icon }}</mat-icon>
             <span class="flex-1 truncate">{{ option.label }}</span>

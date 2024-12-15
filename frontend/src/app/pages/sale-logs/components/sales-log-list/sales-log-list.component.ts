@@ -1,30 +1,55 @@
-import { Component } from '@angular/core';
-import { TaskStatusTranslation } from '../../enum/sale-logs.eum';
+import { Component, OnInit } from '@angular/core';
+import {
+  ColumnIds,
+  RowActionsSet,
+  TaskStatus,
+  TaskStatusTranslation,
+  TaskTypeIcon,
+  ColumnNames,
+} from '../../enum/sale-logs.eum';
+import { Store } from '@ngxs/store';
+import {
+  ChangeTaskStatus,
+  DeleteSalesTaskLog,
+  RemoveFilterOption,
+} from '../../state/sales-log.action';
+import { TaskModalComponent } from '../task-modal/task-modal.component';
+import { MatDialog } from '@angular/material/dialog';
+import { SalesTaskList, TaskModel } from '../../interface/sales-log.interface';
+import { Subscription, tap } from 'rxjs';
+import { SalesLogState } from '../../state/sales-log.state';
 
 @Component({
   selector: 'app-sales-log-list',
   standalone: false,
   templateUrl: './sales-log-list.component.html',
 })
-export class SalesLogListComponent {
+export class SalesLogListComponent implements OnInit {
+  subs = new Subscription();
   taskStatusTranslation = TaskStatusTranslation;
-  taskTypeIcon: { [key: string]: string } = {
-    Call: 'call',
-    Meeting: 'groups',
-    'Video Call': 'video_call',
-  };
-
+  taskTypeIcon = TaskTypeIcon;
+  taskStatus = TaskStatus;
+  columnIds = ColumnIds;
+  columnNames = ColumnNames;
+  tableList: SalesTaskList[] = [];
+  appliedFilterList = {};
+  updateListFlag = false;
+  isFilterApplied = false;
+  object = Object;
   tableColumns = [
     {
+      id: ColumnIds.DATE,
       name: 'Date',
       sort: true,
     },
     {
+      id: ColumnIds.ENTITY_NAME,
       name: 'Entity Name',
       sort: true,
       filter: true,
     },
     {
+      id: ColumnIds.TASK_TYPE,
       name: 'Task Type',
       taskType: 0,
       sort: true,
@@ -35,6 +60,7 @@ export class SalesLogListComponent {
       sort: true,
     },
     {
+      id: ColumnIds.CONTACT_PERSON,
       name: 'Contact Person',
       sort: true,
       filter: true,
@@ -46,6 +72,7 @@ export class SalesLogListComponent {
       width: 'w-1/4',
     },
     {
+      id: ColumnIds.STATUS,
       name: 'Status',
       sort: true,
       filter: true,
@@ -62,5 +89,88 @@ export class SalesLogListComponent {
     { status: 1, taskType: 'Call' },
   ];
 
-  filter = true;
+  constructor(private _store: Store, private _dialog: MatDialog) {}
+
+  ngOnInit(): void {
+    this.setTableData();
+  }
+
+  rowActions(id: number, data: TaskModel) {
+    switch (id) {
+      case RowActionsSet.DELETE:
+        this.deleteSalesTask(data._id);
+        break;
+      case RowActionsSet.EDIT:
+        this.editSalesTask(data);
+        break;
+      case RowActionsSet.UPDATE_STATUS:
+        this.updateSalesTaskStatus(
+          data._id,
+          data.status ? TaskStatus.CLOSED : TaskStatus.OPEN
+        );
+        break;
+      default:
+        console.warn('Unknown action');
+    }
+  }
+
+  removeFilter(columnId: string, value: string | number) {
+    this._store.dispatch(new RemoveFilterOption(columnId as ColumnIds, value));
+  }
+
+  private setTableData() {
+    this.subs.add(
+      this._store.select(SalesLogState.getSalesLog).subscribe((list) => {
+        if (this.updateListFlag) {
+          this.tableList = list;
+        }
+      })
+    );
+    this.subs.add(
+      this._store
+        .select(SalesLogState.getFilterList)
+        .pipe(
+          tap(
+            (filter) =>
+              (this.isFilterApplied = Object.keys(filter).some(
+                (option: string) => {
+                  const currentFilter = filter[option as keyof typeof filter];
+                  if (Array.isArray(currentFilter)) {
+                    return !!currentFilter.length;
+                  }
+                  if (
+                    typeof currentFilter === 'object' &&
+                    currentFilter?.startAt &&
+                    typeof currentFilter.startAt === 'string'
+                  ) {
+                    return !!currentFilter.startAt.length;
+                  }
+                  return false;
+                }
+              ))
+          )
+        )
+        .subscribe((filters) => {
+          this.appliedFilterList = { ...filters };
+        })
+    );
+  }
+
+  private deleteSalesTask(taskId: string) {
+    this._store.dispatch(new DeleteSalesTaskLog(taskId));
+  }
+
+  private updateSalesTaskStatus(TaskId: string, status: number) {
+    this._store.dispatch(new ChangeTaskStatus(TaskId, status));
+  }
+
+  private editSalesTask(data: TaskModel) {
+    const dialogRef = this._dialog.open(TaskModalComponent, {
+      width: '470px',
+      disableClose: true,
+      autoFocus: true,
+      data,
+    });
+    dialogRef.afterClosed().subscribe();
+  }
 }

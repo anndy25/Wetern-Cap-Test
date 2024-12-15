@@ -5,30 +5,34 @@ import {
   SalesLogFilters,
   SalesLogStateModel,
   SalesTaskList,
+  SelectedFilters,
   SortingOrder,
 } from '../interface/sales-log.interface';
-import { GroupBy } from '../enum/sale-logs.eum';
+import { ColumnIds } from '../enum/sale-logs.eum';
 import {
   CreateSalesTask,
   DeleteSalesTaskLog,
   FetchSalesTaskLogs,
+  RemoveFilterOption,
   UpdateSalesLogFilters,
   UpdateSalesLogParameter,
 } from './sales-log.action';
-import { patch } from '@ngxs/store/operators';
+import { patch, removeItem } from '@ngxs/store/operators';
 import { SalesLogService } from '../services/sale-logs.service';
-import { tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
+import { throwError } from 'rxjs';
+import { FilterOption } from '../../../interfaces/filter-menu.interface';
 
 const InitialState: SalesLogStateModel = {
   parameters: {
-    sortBy: GroupBy.DATE,
+    sortBy: ColumnIds.DATE,
     sortingOrder: SortingOrder.ASC,
     search: '',
   },
-  filters: {
-    entityNames: [],
-    date: null,
-    taskTypes: [],
+  selectedFilters: {
+    entityName: [],
+    date: { startAt: '', endAt: '' },
+    taskType: [],
     contactPerson: [],
     status: [],
   },
@@ -36,19 +40,40 @@ const InitialState: SalesLogStateModel = {
 };
 
 @State<SalesLogStateModel>({
-  name: 'MediaTagState',
+  name: 'SalesLogState',
   defaults: InitialState,
 })
 @Injectable()
 export class SalesLogState {
   saleLogService = inject(SalesLogService);
 
+  @Selector()
+  static getFilterList(state: SalesLogStateModel) {
+    return state.selectedFilters;
+  }
+
+  @Selector()
+  static getSalesLogParameters(state: SalesLogStateModel) {
+    return state.logs;
+  }
+
+  @Selector()
+  static getSalesLog(state: SalesLogStateModel) {
+    return state.logs;
+  }
+
   @Action(FetchSalesTaskLogs)
-  FetchSalesLog(
-    ctx: StateContext<SalesLogStateModel>,
-    action: FetchSalesTaskLogs
-  ) {
-    const { parameters, filters } = ctx.getState();
+  FetchSalesLog(ctx: StateContext<SalesLogStateModel>, _: FetchSalesTaskLogs) {
+    const { parameters, selectedFilters } = ctx.getState();
+    const filters: SelectedFilters = {
+      entityNames: selectedFilters.entityName.map((entity) => entity.value),
+      date: selectedFilters.date,
+      taskTypes: selectedFilters.taskType.map((taskType) => taskType.value),
+      contactPerson: selectedFilters.contactPerson.map(
+        (person) => person.value
+      ),
+      status: selectedFilters.status.map((status) => status.value),
+    };
     return this.saleLogService
       .fetchSalesLog(filters, parameters)
       .subscribe((response: SalesTaskList[]) => {
@@ -64,6 +89,10 @@ export class SalesLogState {
     return this.saleLogService.createSalesTask(action.body).pipe(
       tap(() => {
         ctx.dispatch(new FetchSalesTaskLogs());
+      }),
+      catchError((err) => {
+        console.error('Error updating task:', err);
+        return throwError(() => err);
       })
     );
   }
@@ -76,6 +105,10 @@ export class SalesLogState {
     return this.saleLogService.updateSalesTask(action.body).pipe(
       tap(() => {
         ctx.dispatch(new FetchSalesTaskLogs());
+      }),
+      catchError((err) => {
+        console.error('Error updating task:', err);
+        return throwError(() => err);
       })
     );
   }
@@ -94,7 +127,7 @@ export class SalesLogState {
   }
 
   @Action(UpdateSalesLogFilters)
-  UpdateSalesLog(
+  UpdateSalesLogFilters(
     ctx: StateContext<SalesLogStateModel>,
     action: UpdateSalesLogFilters
   ) {
@@ -104,9 +137,12 @@ export class SalesLogState {
 
     ctx.setState(
       patch({
-        filters: patch({ [propertyName]: action.logsFilters[propertyName] }),
+        selectedFilters: patch({
+          [propertyName]: action.logsFilters[propertyName],
+        }),
       })
     );
+
     ctx.dispatch(new FetchSalesTaskLogs());
   }
 
@@ -124,6 +160,29 @@ export class SalesLogState {
         parameters: patch({ [propertyName]: action.parameters[propertyName] }),
       })
     );
+    ctx.dispatch(new FetchSalesTaskLogs());
+  }
+
+  @Action(RemoveFilterOption)
+  RemoveFilterOption(
+    ctx: StateContext<SalesLogStateModel>,
+    action: RemoveFilterOption
+  ) {
+    if (action.columnId === ColumnIds.DATE) {
+      ctx.setState(
+        patch({ selectedFilters: patch({ date: { startAt: '', endAt: '' } }) })
+      );
+    } else {
+      ctx.setState(
+        patch({
+          selectedFilters: patch({
+            [action.columnId]: removeItem<FilterOption>(
+              (option) => option.value === action.value
+            ),
+          }),
+        })
+      );
+    }
     ctx.dispatch(new FetchSalesTaskLogs());
   }
 }

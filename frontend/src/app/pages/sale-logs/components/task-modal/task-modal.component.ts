@@ -1,5 +1,5 @@
-import { Component, Inject, OnInit, signal } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TaskModel } from '../../interface/sales-log.interface';
 import { TaskStatus, TaskStatusTranslation } from '../../enum/sale-logs.eum';
 import {
@@ -10,17 +10,20 @@ import {
 } from '@angular/forms';
 import { Store } from '@ngxs/store';
 import { CreateSalesTask, UpdateSalesTask } from '../../state/sales-log.action';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-task-modal',
   standalone: false,
   templateUrl: './task-modal.component.html',
 })
-export class TaskModalComponent implements OnInit {
+export class TaskModalComponent implements OnInit, OnDestroy {
   taskStatus = TaskStatus;
   taskStatusTranslations = TaskStatusTranslation;
-  public taskForm!: FormGroup;
+  taskForm!: FormGroup;
   taskTime = '';
+  isLoading = false;
+  subs = new Subscription();
 
   taskTypes = [
     { icon: 'call', type: 'Call' },
@@ -40,11 +43,12 @@ export class TaskModalComponent implements OnInit {
   ];
 
   constructor(
-    public _dialog: MatDialog,
+    public _dialog: MatDialogRef<TaskModalComponent>,
     private fb: FormBuilder,
     private _store: Store,
     @Inject(MAT_DIALOG_DATA) public taskInfo: TaskModel
   ) {}
+
   ngOnInit(): void {
     this.setFormControl();
   }
@@ -83,14 +87,35 @@ export class TaskModalComponent implements OnInit {
       .dispatch(
         new CreateSalesTask({ ...this.taskForm.value, date: this.taskForm })
       )
-      .subscribe({ next: () => {}, error: (err) => {} });
+      .subscribe({
+        next: () => {
+          this.isLoading = false;
+          this._dialog.close();
+        },
+        error: () => (this.isLoading = false),
+      });
   }
 
   updateTask() {
     this._store
       .dispatch(
-        new UpdateSalesTask({ ...this.taskForm.value, date: this.taskForm })
+        new UpdateSalesTask(this.taskInfo._id, {
+          ...this.taskForm.value,
+          date: this.taskForm,
+        })
       )
-      .subscribe({ next: () => {}, error: (err) => {} });
+      .subscribe({
+        next: () => {
+          this.isLoading = false;
+          this._dialog.close();
+        },
+        error: () => {
+          this.isLoading = false;
+        },
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
   }
 }

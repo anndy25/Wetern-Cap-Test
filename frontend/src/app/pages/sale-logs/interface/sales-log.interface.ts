@@ -1,4 +1,5 @@
-import { GroupBy as SortBy } from '../enum/sale-logs.eum';
+import { FilterOption } from '../../../interfaces/filter-menu.interface';
+import { ColumnIds as SortBy } from '../enum/sale-logs.eum';
 
 export enum SortingOrder {
   ASC,
@@ -17,11 +18,19 @@ export interface ContactPersonInfo {
 }
 
 export interface SalesLogFilters {
-  entityNames: string[];
-  date?: { startAt: string; endAt: string } | null;
-  taskTypes?: string[];
-  contactPerson?: string[];
-  status?: number[];
+  entityName: FilterOption[];
+  date: { startAt: string; endAt: string };
+  taskType: FilterOption[];
+  contactPerson: FilterOption[];
+  status: FilterOption[];
+}
+
+export interface SelectedFilters {
+  entityNames: Array<string | number>;
+  date: { startAt: string; endAt: string };
+  taskTypes: Array<string | number>;
+  contactPerson: Array<string | number>;
+  status: Array<string | number>;
 }
 
 export interface TaskModel {
@@ -43,6 +52,6 @@ export interface SalesTaskList {
 
 export interface SalesLogStateModel {
   parameters: LogParameters;
-  filters: SalesLogFilters;
+  selectedFilters: SalesLogFilters;
   logs: SalesTaskList[] | [];
 }

@@ -1,6 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TaskModalComponent } from '../task-modal/task-modal.component';
+import { Store } from '@ngxs/store';
+import { UpdateSalesLogParameter } from '../../state/sales-log.action';
 
 @Component({
   selector: 'app-sales-log-action',
@@ -8,13 +10,17 @@ import { TaskModalComponent } from '../task-modal/task-modal.component';
   standalone: false,
 })
 export class SalesLogActionComponent {
-  readonly dialog = inject(MatDialog);
+  constructor(private _dialog: MatDialog, private _store: Store) {}
   onClickAction() {
-    const dialogRef = this.dialog.open(TaskModalComponent, {
+    const dialogRef = this._dialog.open(TaskModalComponent, {
       width: '470px',
       disableClose: true,
       autoFocus: false,
     });
     dialogRef.afterClosed().subscribe();
+  }
+
+  onSearchChange(search: string) {
+    this._store.dispatch(new UpdateSalesLogParameter({ search }));
   }
 }

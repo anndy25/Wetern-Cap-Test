@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import {
   LogParameters,
-  SalesLogFilters,
   SalesTaskList,
+  SelectedFilters,
   TaskModel,
 } from '../interface/sales-log.interface';
 import { Observable } from 'rxjs';
@@ -26,7 +26,7 @@ export class SalesLogService {
   }
 
   fetchSalesLog(
-    body: SalesLogFilters,
+    body: SelectedFilters,
     params: LogParameters
   ): Observable<SalesTaskList[]> {
     const url = `${environment.domain}/sale-logs/get-logs`;
