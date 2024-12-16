@@ -20,9 +20,10 @@ export class FilterMenuComponent implements OnChanges {
   @Input() options: FilterOption[] = [];
   @Input() defaultOptions: FilterOption[] = [];
   @Input() sortBy = false;
-  @Input() sortingOrder = SortingOrder;
   @Output() closeFilterMenu = new EventEmitter<FilterOption[]>();
+  @Output() sortByChanged = new EventEmitter<SortingOrder>();
   selectedItems = new Set<number | string>();
+  sortingOrder = SortingOrder.ASC;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['defaultOptions'] && !changes['defaultOptions'].firstChange) {
@@ -34,6 +35,11 @@ export class FilterMenuComponent implements OnChanges {
             this.selectedItems.add(element.value);
           }
         });
+      }
+    }
+    if (changes['sortBy'] && !changes['sortBy']?.firstChange) {
+      if (!changes['sortBy'].currentValue) {
+        this.sortingOrder = SortingOrder.ASC;
       }
     }
   }
@@ -59,7 +65,15 @@ export class FilterMenuComponent implements OnChanges {
         });
       }
     }
-
     this.closeFilterMenu.emit(responseArray);
+  }
+
+  onSortingOrderChanged() {
+    this.sortingOrder =
+      this.sortBy && this.sortingOrder === SortingOrder.ASC
+        ? SortingOrder.DES
+        : SortingOrder.ASC;
+
+    this.sortByChanged.emit(this.sortingOrder);
   }
 }

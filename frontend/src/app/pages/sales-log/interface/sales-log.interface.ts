@@ -1,5 +1,5 @@
 import { FilterOption } from '../../../interfaces/filter-menu.interface';
-import { ColumnIds, ColumnIds as SortBy } from '../enum/sales-log.eum';
+import { ColumnIds } from '../enum/sales-log.eum';
 
 export enum SortingOrder {
   ASC,
@@ -15,7 +15,7 @@ export interface TableColumn {
 }
 
 export interface LogParameters {
-  sortBy?: SortBy;
+  sortBy?: ColumnIds;
   sortingOrder?: SortingOrder;
   search?: string;
 }

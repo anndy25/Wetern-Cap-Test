@@ -11,7 +11,13 @@
 
     <mat-icon
       *ngIf="enableSort"
-      class="text-xl font-medium cursor-pointer hover:text-neutral-800"
+      [ngClass]="{
+        'text-neutral-800': sortBy,
+        'rotate-0': !sortingOrder,
+        'rotate-180': sortingOrder
+      }"
+      class="text-xl font-medium duration-200 ease-in cursor-pointer hover:text-neutral-800"
+      (click)="onSortingOrderChanged()"
       >arrow_upward</mat-icon
     >
   </div>

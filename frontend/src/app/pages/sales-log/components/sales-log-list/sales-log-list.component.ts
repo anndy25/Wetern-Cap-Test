@@ -14,11 +14,13 @@ import {
   FetchSalesLogFilters,
   RemoveFilterOption,
   UpdateAppliedSalesLogFilters,
+  UpdateSalesLogParameter,
 } from '../../state/sales-log.action';
 import { TaskModalComponent } from '../task-modal/task-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import {
   SalesTaskList,
+  SortingOrder,
   TableColumn,
   TaskModel,
 } from '../../interface/sales-log.interface';
@@ -43,6 +45,7 @@ export class SalesLogListComponent implements OnInit, OnDestroy {
   salesFiltersOptions = {} as Record<ColumnIds, any>;
   appliedFilterList = {} as Record<ColumnIds, any>;
   isFilterApplied = false;
+  sortBy: ColumnIds = ColumnIds.DATE;
   tableColumns: TableColumn[] = [
     {
       id: ColumnIds.DATE,
@@ -98,7 +101,7 @@ export class SalesLogListComponent implements OnInit, OnDestroy {
 
   data: any = [
     { status: 0, taskType: 'Meeting' },
-    { status: 1, taskType: 'Call' },
+    { status: 1, taskType: 'Call', notes: 'lorem32' },
   ];
 
   constructor(private _store: Store, private _dialog: MatDialog) {}
@@ -187,6 +190,11 @@ export class SalesLogListComponent implements OnInit, OnDestroy {
     );
   }
 
+  onUpdateParameters(sortBy: ColumnIds, sortingOrder: SortingOrder) {
+    this.sortBy = sortBy;
+    this._store.dispatch(new UpdateSalesLogParameter({ sortBy, sortingOrder }));
+  }
+
   private deleteSalesTask(taskId: string) {
     this._store.dispatch(new DeleteSalesTaskLog(taskId));
   }
@@ -195,7 +203,7 @@ export class SalesLogListComponent implements OnInit, OnDestroy {
     this._store.dispatch(new ChangeTaskStatus(TaskId, status));
   }
 
-  private editSalesTask(data: TaskModel) {
+  editSalesTask(data: TaskModel) {
     const dialogRef = this._dialog.open(TaskModalComponent, {
       width: '470px',
       disableClose: true,
