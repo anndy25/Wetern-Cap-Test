@@ -20,8 +20,8 @@ export class SalesLogService {
     return this._http.post(url, body);
   }
 
-  updateSalesTask(body: TaskModel): Observable<any> {
-    const url = `${environment.domain}/sales-log/update-task`;
+  updateSalesTask(taskId: string, body: TaskModel): Observable<any> {
+    const url = `${environment.domain}/sales-log/update-task/${taskId}`;
     return this._http.put(url, body);
   }
 
@@ -29,14 +29,14 @@ export class SalesLogService {
     body: SelectedFilters,
     params: LogParameters
   ): Observable<SalesTaskList[]> {
-    const url = `${environment.domain}/sales-log/get-logs`;
+    const url = `${environment.domain}/sales-log/`;
     return this._http.post<SalesTaskList[]>(url, body, {
       params: params as HttpParams,
     });
   }
 
   deleteSalesTaskLog(id: string) {
-    const url = `${environment.domain}/sales-log/delete-log/${id}`;
+    const url = `${environment.domain}/sales-log/delete-task/${id}`;
     return this._http.delete(url);
   }
 

@@ -17,6 +17,7 @@ import {
   RemoveFilterOption,
   UpdateAppliedSalesLogFilters,
   UpdateSalesLogParameter,
+  UpdateSalesTask,
 } from './sales-log.action';
 import { patch, removeItem } from '@ngxs/store/operators';
 import { SalesLogService } from '../services/sales-log.service';
@@ -109,12 +110,12 @@ export class SalesLogState {
     );
   }
 
-  @Action(CreateSalesTask)
+  @Action(UpdateSalesTask)
   UpdateSalesTask(
     ctx: StateContext<SalesLogStateModel>,
-    action: CreateSalesTask
+    action: UpdateSalesTask
   ) {
-    return this.saleLogService.updateSalesTask(action.body).pipe(
+    return this.saleLogService.updateSalesTask(action.taskId, action.body).pipe(
       tap(() => {
         ctx.dispatch(new FetchSalesTaskLogs());
       }),

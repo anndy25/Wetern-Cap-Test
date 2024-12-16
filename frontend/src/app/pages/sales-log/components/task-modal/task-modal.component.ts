@@ -85,7 +85,7 @@ export class TaskModalComponent implements OnInit, OnDestroy {
   createTask() {
     this._store
       .dispatch(
-        new CreateSalesTask({ ...this.taskForm.value, date: this.taskForm })
+        new CreateSalesTask({ ...this.taskForm.value, date: this.taskTime })
       )
       .subscribe({
         next: () => {
@@ -99,9 +99,9 @@ export class TaskModalComponent implements OnInit, OnDestroy {
   updateTask() {
     this._store
       .dispatch(
-        new UpdateSalesTask(this.taskInfo._id, {
+        new UpdateSalesTask(this.taskInfo.id, {
           ...this.taskForm.value,
-          date: this.taskForm,
+          date: this.taskTime,
         })
       )
       .subscribe({

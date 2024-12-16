@@ -21,7 +21,7 @@ yarn-error.log
 *.sublime-workspace
 
 # Visual Studio Code
-.vscode/*
+/.vscode
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -41,10 +41,29 @@ testem.log
 .DS_Store
 Thumbs.db
 
-/vscode
+.vscode/
 .nx
 .nx.bat
+*.editorconfig/
+
 
 .nx/installation
 .nx/cache
 .nx/workspace-data
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Compiled bytecode
+*.class
+*.so
+*.dll

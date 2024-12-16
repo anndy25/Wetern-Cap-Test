@@ -42,7 +42,7 @@ export interface SelectedFilters {
 }
 
 export interface TaskModel {
-  _id: string;
+  id: string;
   entityName: string;
   date: string;
   taskType: string;
