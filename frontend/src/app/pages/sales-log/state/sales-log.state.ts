@@ -8,7 +8,11 @@ import {
   SelectedFilters,
   SortingOrder,
 } from '../interface/sales-log.interface';
-import { ColumnIds } from '../enum/sales-log.eum';
+import {
+  ColumnIds,
+  TaskStatusTranslation,
+  TaskTypeIcon,
+} from '../enum/sales-log.eum';
 import {
   ChangeTaskStatus,
   CreateSalesTask,
@@ -100,10 +104,20 @@ export class SalesLogState {
     ctx: StateContext<SalesLogStateModel>,
     _: FetchSalesLogFilters
   ) {
-    this.saleLogService.fetchSalesLogFilter().subscribe((data: any) => {
-      console.log(data);
-      // ctx.patchState({ logs: response });
-    });
+    this.saleLogService
+      .fetchSalesLogFilter()
+      .subscribe((filters: Record<string | number, FilterOption[]>) => {
+        filters['taskType'].forEach(
+          (option) => (option.icon = TaskTypeIcon[option.value])
+        );
+
+        filters['status'].forEach(
+          (option) =>
+            (option.label = TaskStatusTranslation[option.value as number])
+        );
+
+        ctx.setState(patch({ filterOptions: filters }));
+      });
   }
 
   @Action(CreateSalesTask)

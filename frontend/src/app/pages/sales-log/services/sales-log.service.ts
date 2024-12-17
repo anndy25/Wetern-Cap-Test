@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import {
@@ -8,6 +8,7 @@ import {
   TaskModel,
 } from '../interface/sales-log.interface';
 import { Observable } from 'rxjs';
+import { FilterOption } from '../../../interfaces/filter-menu.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -30,8 +31,10 @@ export class SalesLogService {
     params: LogParameters
   ): Observable<SalesTaskList[]> {
     const url = `${environment.domain}/sales-log/`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this._http.post<SalesTaskList[]>(url, body, {
       params: params as HttpParams,
+      headers,
     });
   }
 
@@ -42,7 +45,7 @@ export class SalesLogService {
 
   fetchSalesLogFilter() {
     const url = `${environment.domain}/sales-log/filters`;
-    return this._http.get(url);
+    return this._http.get<Record<string, FilterOption[]>>(url);
   }
 
   updateSalesTaskStatus(taskId: string, status: number) {
