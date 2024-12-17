@@ -20,6 +20,7 @@ import { FilterMenuComponent } from './filter-menu/filter-menu.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HttpClientModule } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [FilterCardListComponent, InputComponent, FilterMenuComponent],
@@ -40,12 +41,14 @@ import { MatCardModule } from '@angular/material/card';
     MatDatepickerModule,
     MatNativeDateModule,
     MatSelectModule,
+    MatSnackBarModule,
     MatTimepickerModule,
     MatButtonModule,
     MatMenuModule,
     MatCardModule,
     MatDialogModule,
     MatIconModule,
+    MatCardModule,
     ReactiveFormsModule,
     MatButtonToggleModule,
     InputComponent,

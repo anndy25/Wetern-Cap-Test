@@ -14,7 +14,7 @@ except Exception as e:
     fetch_sales_log_service = None
 
 
-@app.route("/sales-log", methods=["POST"])
+@app.route("/sales-log/get-logs", methods=["POST"])
 def get_sales_log():
     try:
         result = fetch_sales_log_service.get_sales_logs(
@@ -56,6 +56,7 @@ def update_task(task_id):
 @app.route("/sales-log/status/<task_id>", methods=["PATCH"])
 def update_task_status(task_id):
     try:
+        print(task_id, request.get_json())
         response = sales_log_service.update_task_status(
             task_id, request.get_json().get("status")
         )

@@ -102,7 +102,7 @@
             <textarea
               matInput
               placeholder="Note (Optional)"
-              formControlName="note"
+              formControlName="notes"
               rows="4"
             ></textarea>
           </mat-form-field>
@@ -129,7 +129,12 @@
       "
       class="px-10 py-4 rounded-sm"
     >
+      @if(isLoading){
+      <svg class="animate-spin h-5 w-5 mr-3 ..." viewBox="0 0 24 24"></svg>
+
+      }@else {
       {{ taskInfo ? "UPDATE" : " SAVE" }}
+      }
     </button>
   </div>
 </ng-template>

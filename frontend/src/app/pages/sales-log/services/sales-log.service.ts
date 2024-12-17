@@ -30,7 +30,7 @@ export class SalesLogService {
     body: SelectedFilters,
     params: LogParameters
   ): Observable<SalesTaskList[]> {
-    const url = `${environment.domain}/sales-log/`;
+    const url = `${environment.domain}/sales-log/get-logs`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this._http.post<SalesTaskList[]>(url, body, {
       params: params as HttpParams,

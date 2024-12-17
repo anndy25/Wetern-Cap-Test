@@ -20,9 +20,9 @@ export class FilterCardListComponent implements OnInit {
   dateStringValue = '';
 
   ngOnInit(): void {
-    if (this.columnId === ColumnIds.DATE && this.filters.length) {
+    if (this.columnId === ColumnIds.DATE && this.filters[0].length) {
       this.dateStringValue = moment(this.filters[0]).format('D MMM YYYY');
-      if (this.filters[1]) {
+      if (this.filters[1].length) {
         this.dateStringValue = `${this.dateStringValue} - ${moment(
           this.filters[1]
         ).format('D MMM YYYY')}`;

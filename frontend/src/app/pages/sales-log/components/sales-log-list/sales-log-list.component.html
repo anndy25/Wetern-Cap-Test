@@ -58,7 +58,7 @@
 <ng-template #tableHeader>
   @for (column of tableColumns; track $index) {
   <th
-    class="font-normal text-start text-neutral-400"
+    class="h-10 font-normal text-start text-neutral-400"
     [ngClass]="column.width ? column.width : ''"
   >
     <app-filter-menu
@@ -80,11 +80,21 @@
   <tr>
     <td colspan="8">
       <div class="flex items-center py-2 text-xs gap-x-4">
-        <div class="font-semibold">{{ logList.entity }}</div>
-        <div class="text-neutral-400" *ngIf="sortBy === columnIds.DATE">
+        @if(sortBy === columnIds.DATE){
+        <div class="font-semibold">
+          {{ logList.entity | localDateTime : "D MMM YYYY" }}
+        </div>
+        <div class="text-neutral-400">
           {{ logList.entity | relativeDate }}
         </div>
-        <div class="text-neutral-400">{{ logList.openCount }}</div>
+        }@else if(sortBy === columnIds.STATUS){
+        <div class="font-semibold">
+          {{ taskStatusTranslation[logList.entity] }}
+        </div>
+        }@else {
+        <div class="font-semibold">{{ logList.entity }}</div>
+        }
+        <div class="text-neutral-400">{{ logList.openCount + " Open" }}</div>
         <div class="flex-1 border border-neutral-200 h-1/2"></div>
       </div>
     </td>
@@ -122,7 +132,9 @@
     <td>{{ data.contactPerson }}</td>
     <td class="pr-4 truncate">
       @if(data.notes){
-      {{ data.notes }}
+      <span>
+        {{ data.notes }}
+      </span>
       } @else {
       <ng-container
         *ngTemplateOutlet="addNotesTemplate; context: { data: data }"

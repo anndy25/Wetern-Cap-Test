@@ -29,6 +29,7 @@ import { SalesLogService } from '../services/sales-log.service';
 import { catchError, tap } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { FilterOption } from '../../../interfaces/filter-menu.interface';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 const InitialState: SalesLogStateModel = {
   parameters: {
@@ -59,6 +60,7 @@ const InitialState: SalesLogStateModel = {
 @Injectable()
 export class SalesLogState {
   saleLogService = inject(SalesLogService);
+  private _snackBar = inject(MatSnackBar);
 
   @Selector()
   static getSalesLog(state: SalesLogStateModel) {
@@ -162,6 +164,7 @@ export class SalesLogState {
       .subscribe({
         next: () => {
           ctx.dispatch(new FetchSalesTaskLogs());
+          this.openSnackBar('Successfully updated task status!');
         },
         error: () => {},
       });
@@ -175,6 +178,7 @@ export class SalesLogState {
     this.saleLogService.deleteSalesTaskLog(action.taskId).subscribe({
       next: () => {
         ctx.dispatch(new FetchSalesTaskLogs());
+        this.openSnackBar('Successfully deleted task!');
       },
       error: () => {},
     });
@@ -196,7 +200,6 @@ export class SalesLogState {
         }),
       })
     );
-
     ctx.dispatch(new FetchSalesTaskLogs());
   }
 
@@ -205,13 +208,9 @@ export class SalesLogState {
     ctx: StateContext<SalesLogStateModel>,
     action: UpdateSalesLogParameter
   ) {
-    const propertyName = Object.keys(
-      action.parameters
-    )[0] as keyof LogParameters;
-
     ctx.setState(
       patch({
-        parameters: patch({ [propertyName]: action.parameters[propertyName] }),
+        parameters: patch({ ...action.parameters }),
       })
     );
     ctx.dispatch(new FetchSalesTaskLogs());
@@ -238,5 +237,14 @@ export class SalesLogState {
       );
     }
     ctx.dispatch(new FetchSalesTaskLogs());
+  }
+
+  openSnackBar(message: string) {
+    this._snackBar.open(message, 'close', {
+      duration: 3000,
+      horizontalPosition: 'left',
+      verticalPosition: 'bottom',
+      panelClass: 'text-green-300',
+    });
   }
 }

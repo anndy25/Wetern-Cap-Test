@@ -7,7 +7,13 @@ from flask_cors import CORS
 load_dotenv()
 app = Flask(__name__)
 # Allow CORS for all domains
-CORS(app)
+CORS(
+    app,
+    origins="*",
+    supports_credentials=True,
+    methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
+)
 
 
 @app.before_request
@@ -22,8 +28,8 @@ def after_request_func(response):
 
 
 @app.route("/")
-def index():
-    return jsonify({"message": "Server is running"})
+def server_route():
+    return {"message": "Server is running"}
 
 
 try:

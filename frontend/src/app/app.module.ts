@@ -5,8 +5,6 @@ import { AppComponent } from './app.component';
 import { MatInputModule } from '@angular/material/input';
 
 import { HeaderComponent } from './components/header/header.component';
-
-import { DebounceChangeDirective } from './directives/debounce-change.directive';
 import { PagesModule } from './pages/pages.module';
 
 @NgModule({

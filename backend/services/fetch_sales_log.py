@@ -67,64 +67,63 @@ def get_sales_filters():
 def get_sales_logs(filters, query_params):
     try:
         # Extract filters and sorting details
-        print(filters)
-        print(query_params)
         sort_by = query_params.get("sort_by", "date")
-        sorting_order = (
-            1 if query_params.get("sorting_order", 0) == 0 else -1
-        )  # Ascending = 0, Descending = 1
+        sorting_order = 1 if int(query_params.get("sorting_order", 0)) == 0 else -1
+        # Ascending = 0, Descending = 1
         search_text = query_params.get("search", "").strip()
+
         match_conditions = {}
+
         group_by_logic = {
             "date": {
                 "$dateFromString": {
                     "dateString": {
                         "$dateToString": {
-                            "format": "%Y-%m-%dT00:00:00.000Z",
+                            "format": "%Y-%m-%d",
                             "date": "$date",
                         },
                     },
                 },
             },
             "status": "$status",
-            "task_type": "$task_type",
-            "entity_name": "$entity_name",
-            "contact_person": "$contact_person",
+            "taskType": "$task_type",
+            "entityName": "$entity_name",
+            "contactPerson": "$contact_person",
         }
 
         # Dynamically choose groupBy logic based on sort_by
         group_by_key = group_by_logic.get(sort_by, "$date")
 
-        # Apply search logic if a search text is provided
-        if search_text:
+        if search_text.strip():
             match_conditions["$or"] = [
                 {"entity_name": {"$regex": search_text, "$options": "i"}},
                 {"contact_person": {"$regex": search_text, "$options": "i"}},
                 {"task_type": {"$regex": search_text, "$options": "i"}},
             ]
-        if "entity_name" in filters:
-            match_conditions["entity_name"] = {
-                "$in": [f["value"] for f in filters.get("entity_name", [])]
-            }
-        if "task_type" in filters:
-            match_conditions["task_type"] = {
-                "$in": [f["value"] for f in filters.get("task_type", [])]
-            }
-        if "contact_person" in filters:
-            match_conditions["contact_person"] = {
-                "$in": [f["value"] for f in filters.get("contact_person", [])]
-            }
-        if "status" in filters:
-            match_conditions["status"] = {
-                "$in": [f["value"] for f in filters.get("status", [])]
-            }
-        if "date" in filters:
+
+        # Dynamically add filters only if the arrays are not empty
+        if "entity_names" in filters and len(filters.get("entity_names")) > 0:
+            match_conditions["entity_name"] = {"$in": filters.get("entity_names")}
+
+        if "task_types" in filters and len(filters.get("task_types")) > 0:
+            match_conditions["task_type"] = {"$in": filters.get("task_types")}
+
+        if "contact_person" in filters and len(filters.get("contact_person")) > 0:
+            match_conditions["contact_person"] = {"$in": filters.get("contact_person")}
+
+        if "status" in filters and len(filters.get("status")) > 0:
+            match_conditions["status"] = {"$in": filters.get("status")}
+
+        if (
+            "date" in filters
+            and len(filters.get("date").get("start_at")) > 0
+            and len(filters.get("date").get("end_at")) > 0
+        ):
             date_filter = filters.get("date", {})
-            if "start_at" in date_filter and "end_at" in date_filter:
-                match_conditions["date"] = {
-                    "$gte": date_filter["start_at"],
-                    "$lte": date_filter["end_at"],
-                }
+            match_conditions["date"] = {
+                "$gte": date_filter["start_at"],
+                "$lte": date_filter["end_at"],
+            }
 
         # MongoDB aggregation pipeline with data transformation
         pipeline = [
@@ -162,7 +161,12 @@ def get_sales_logs(filters, query_params):
                             "in": {
                                 "id": {"$toString": "$$item._id"},
                                 "status": "$$item.status",
-                                "date": "$$item.date",
+                                "date": {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%dT%H:%M:%S.%LZ",
+                                        "date": "$$item.date",
+                                    }
+                                },
                                 "entity_name": "$$item.entity_name",
                                 "contact_person": "$$item.contact_person",
                                 "task_type": "$$item.task_type",
@@ -171,9 +175,9 @@ def get_sales_logs(filters, query_params):
                             },
                         }
                     },
-                }
+                },
             },
-            {"$sort": {"entity": sorting_order}},  # Final sort by the grouped label
+            {"$sort": {"entity": sorting_order}},
         ]
 
         try:

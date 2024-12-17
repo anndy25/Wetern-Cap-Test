@@ -40,7 +40,7 @@ export class SalesLogListComponent implements OnInit, OnDestroy {
   columnIds = ColumnIds;
   object = Object;
   columnNames = ColumnNames;
-  taskStatusTranslation = TaskStatusTranslation;
+  taskStatusTranslation: Record<string, string> = TaskStatusTranslation;
   subs = new Subscription();
   tableList: SalesTaskList[] = [];
   salesFiltersOptions = {} as Record<ColumnIds, any>;
@@ -119,7 +119,9 @@ export class SalesLogListComponent implements OnInit, OnDestroy {
       case RowActionsSet.UPDATE_STATUS:
         this.updateSalesTaskStatus(
           data.id,
-          data.status ? TaskStatus.CLOSED : TaskStatus.OPEN
+          data.status === TaskStatus.CLOSED
+            ? TaskStatus.OPEN
+            : TaskStatus.CLOSED
         );
         break;
       default:
@@ -199,8 +201,8 @@ export class SalesLogListComponent implements OnInit, OnDestroy {
     this._store.dispatch(new DeleteSalesTaskLog(taskId));
   }
 
-  private updateSalesTaskStatus(TaskId: string, status: number) {
-    this._store.dispatch(new ChangeTaskStatus(TaskId, status));
+  private updateSalesTaskStatus(taskId: string, status: number) {
+    this._store.dispatch(new ChangeTaskStatus(taskId, status));
   }
 
   editSalesTask(data: TaskModel) {

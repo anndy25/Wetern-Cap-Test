@@ -1,11 +1,13 @@
-<div class="flex flex-wrap mr-2 gap-x-2">
+<div class="flex flex-wrap">
   @if(colId.DATE===columnId){
-  <ng-container
-    *ngTemplateOutlet="
-      filterTemplate;
-      context: { columnId, filter: dateStringValue, value: dateStringValue }
-    "
-  ></ng-container>
+  <div *ngIf="dateStringValue.length">
+    <ng-container
+      *ngTemplateOutlet="
+        filterTemplate;
+        context: { columnId, filter: dateStringValue, value: dateStringValue }
+      "
+    ></ng-container>
+  </div>
   }@else { @for (filterInfo of filters; track $index) {
   <ng-container
     *ngTemplateOutlet="
@@ -24,7 +26,7 @@
   let-value="value"
 >
   <div
-    class="flex items-center justify-between py-2 pl-3.5 pr-1 rounded-md gap-x-3 bg-sky-200"
+    class="flex items-center justify-between py-2 pl-3.5 pr-1 rounded-md gap-x-3 bg-sky-200 mr-2"
   >
     <div class="text-xs">
       <div class="font-bold">{{ columnNames[columnId] }}</div>

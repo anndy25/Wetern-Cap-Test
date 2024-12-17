@@ -37,4 +37,5 @@ export const TaskTypeIcon: { [key: string]: string } = {
   Call: 'call',
   Meeting: 'groups',
   'Video Call': 'video_call',
+  Email: 'email',
 };

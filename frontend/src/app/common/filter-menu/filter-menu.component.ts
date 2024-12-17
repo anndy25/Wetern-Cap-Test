@@ -28,7 +28,7 @@ export class FilterMenuComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['defaultOptions'] && !changes['defaultOptions'].firstChange) {
       const defaultOptions = changes['defaultOptions'].currentValue;
-
+      this.selectedItems.clear();
       if (Array.isArray(defaultOptions)) {
         defaultOptions.forEach((element) => {
           if (element && element.value != null) {
@@ -73,7 +73,6 @@ export class FilterMenuComponent implements OnChanges {
       this.sortBy && this.sortingOrder === SortingOrder.ASC
         ? SortingOrder.DES
         : SortingOrder.ASC;
-
     this.sortByChanged.emit(this.sortingOrder);
   }
 }

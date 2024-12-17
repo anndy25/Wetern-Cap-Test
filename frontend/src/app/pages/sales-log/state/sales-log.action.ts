@@ -6,7 +6,7 @@ import {
 } from '../interface/sales-log.interface';
 
 export class CreateSalesTask {
-  static readonly type = '[Sales Log] Update Sale Task';
+  static readonly type = '[Sales Log] Create Sale Task';
   constructor(public readonly body: TaskModel) {}
 }
 
