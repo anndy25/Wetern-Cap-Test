@@ -12,6 +12,7 @@ import {
   ChangeTaskStatus,
   DeleteSalesTaskLog,
   FetchSalesLogFilters,
+  FetchSalesTaskLogs,
   RemoveFilterOption,
   UpdateAppliedSalesLogFilters,
   UpdateSalesLogParameter,
@@ -98,11 +99,7 @@ export class SalesLogListComponent implements OnInit, OnDestroy {
       filter: false,
     },
   ];
-
-  data: any = [
-    { status: 0, taskType: 'Meeting' },
-    { status: 1, taskType: 'Call', notes: 'lorem32' },
-  ];
+  isFetch = false;
 
   constructor(private _store: Store, private _dialog: MatDialog) {}
 
@@ -114,14 +111,14 @@ export class SalesLogListComponent implements OnInit, OnDestroy {
   rowActions(id: number, data: TaskModel) {
     switch (id) {
       case RowActionsSet.DELETE:
-        this.deleteSalesTask(data._id);
+        this.deleteSalesTask(data.id);
         break;
       case RowActionsSet.EDIT:
         this.editSalesTask(data);
         break;
       case RowActionsSet.UPDATE_STATUS:
         this.updateSalesTaskStatus(
-          data._id,
+          data.id,
           data.status ? TaskStatus.CLOSED : TaskStatus.OPEN
         );
         break;
@@ -135,11 +132,14 @@ export class SalesLogListComponent implements OnInit, OnDestroy {
   }
 
   private setTableData() {
+    this._store.dispatch(new FetchSalesTaskLogs());
     this.subs.add(
       this._store.select(SalesLogState.getSalesLog).subscribe((list) => {
         this.tableList = list;
+        this.isFetch = true;
       })
     );
+
     this.subs.add(
       this._store
         .select(SalesLogState.getAppliedFilter)

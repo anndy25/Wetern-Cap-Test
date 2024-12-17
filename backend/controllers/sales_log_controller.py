@@ -26,7 +26,7 @@ def get_sales_log():
         return jsonify({"error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 
-@app.route("/sales-log/filters")
+@app.route("/sales-log/filters", methods=["GET"])
 def get_sales_filters():
     try:
         response = fetch_sales_log_service.get_sales_filters()

@@ -13,6 +13,7 @@ import {
   ChangeTaskStatus,
   CreateSalesTask,
   DeleteSalesTaskLog,
+  FetchSalesLogFilters,
   FetchSalesTaskLogs,
   RemoveFilterOption,
   UpdateAppliedSalesLogFilters,
@@ -56,17 +57,17 @@ export class SalesLogState {
   saleLogService = inject(SalesLogService);
 
   @Selector()
+  static getSalesLog(state: SalesLogStateModel) {
+    return state.logs;
+  }
+
+  @Selector()
   static getAppliedFilter(state: SalesLogStateModel) {
     return state.appliedFilters;
   }
 
   @Selector()
   static getSalesLogParameters(state: SalesLogStateModel) {
-    return state.logs;
-  }
-
-  @Selector()
-  static getSalesLog(state: SalesLogStateModel) {
     return state.logs;
   }
 
@@ -92,6 +93,17 @@ export class SalesLogState {
       .subscribe((response: SalesTaskList[]) => {
         ctx.patchState({ logs: response });
       });
+  }
+
+  @Action(FetchSalesLogFilters)
+  fetchSalesLogFilters(
+    ctx: StateContext<SalesLogStateModel>,
+    _: FetchSalesLogFilters
+  ) {
+    this.saleLogService.fetchSalesLogFilter().subscribe((data: any) => {
+      console.log(data);
+      // ctx.patchState({ logs: response });
+    });
   }
 
   @Action(CreateSalesTask)
@@ -124,6 +136,21 @@ export class SalesLogState {
         return throwError(() => err);
       })
     );
+  }
+
+  @Action(ChangeTaskStatus)
+  changeTaskStatus(
+    ctx: StateContext<SalesLogStateModel>,
+    action: ChangeTaskStatus
+  ) {
+    this.saleLogService
+      .updateSalesTaskStatus(action.taskId, action.status)
+      .subscribe({
+        next: () => {
+          ctx.dispatch(new FetchSalesTaskLogs());
+        },
+        error: () => {},
+      });
   }
 
   @Action(DeleteSalesTaskLog)
@@ -196,14 +223,6 @@ export class SalesLogState {
         })
       );
     }
-    ctx.dispatch(new FetchSalesTaskLogs());
-  }
-
-  @Action(ChangeTaskStatus)
-  changeTaskStatus(
-    ctx: StateContext<SalesLogStateModel>,
-    action: ChangeTaskStatus
-  ) {
     ctx.dispatch(new FetchSalesTaskLogs());
   }
 }

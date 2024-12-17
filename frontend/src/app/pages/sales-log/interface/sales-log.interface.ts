@@ -48,7 +48,7 @@ export interface TaskModel {
   taskType: string;
   phoneNumber: number;
   contactPerson: ContactPersonInfo;
-  note?: string;
+  notes?: string;
   status: number;
 }
 

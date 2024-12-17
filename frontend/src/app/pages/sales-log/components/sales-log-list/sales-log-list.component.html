@@ -1,115 +1,151 @@
 <div class="px-8">
+  <!-- Filter Section -->
   <ng-container *ngTemplateOutlet="filterSection"></ng-container>
+
+  <!-- Table Section -->
   <ng-container *ngTemplateOutlet="tableSection"></ng-container>
 </div>
 
-<!-- filter template -->
+<!-- Filter Section Template -->
 <ng-template #filterSection>
   <div class="flex flex-wrap items-center w-full py-2 gap-y-2 min-h-20">
     @if(isFilterApplied){
-    <app-filter-card-list
-      *ngFor="let item of appliedFilterList | keyvalue"
-      [columnId]="item.key"
-      [filters]="
-        item.key === columnIds.DATE ? object.values(item.value) : item.value
-      "
-      (removedFilter)="removeFilter(item.key, $event)"
-    />
-
-    }@else{
-    <div class="flex items-center text-sm text-neutral-900">
-      Use the
-      <mat-icon class="font-medium text-neutral-400">filter_alt</mat-icon> icon
-      next to the table title to apply filters
-    </div>
+    <ng-container *ngTemplateOutlet="filterCardList"></ng-container>
+    } @else {
+    <ng-container *ngTemplateOutlet="filterEmptyState"></ng-container>
     }
   </div>
 </ng-template>
 
-<!-- table template -->
+<!-- Filter Card List Template -->
+<ng-template #filterCardList>
+  <app-filter-card-list
+    *ngFor="let item of appliedFilterList | keyvalue"
+    [columnId]="item.key"
+    [filters]="
+      item.key === columnIds.DATE ? object.values(item.value) : item.value
+    "
+    (removedFilter)="removeFilter(item.key, $event)"
+  />
+</ng-template>
+
+<!-- Filter Empty State Template -->
+<ng-template #filterEmptyState>
+  <div class="flex items-center text-sm text-neutral-900">
+    Use the
+    <mat-icon class="font-medium text-neutral-400">filter_alt</mat-icon> icon
+    next to the table title to apply filters
+  </div>
+</ng-template>
+
+<!-- Table Section Template -->
 <ng-template #tableSection>
   <div class="overflow-x-auto">
-    <table class="text-sm table-fixed xl:w-full border-collaps">
+    <table class="text-sm border-collapse table-fixed xl:w-full">
       <thead>
         <tr>
-          @for (column of tableColumns; track $index) {
-          <th
-            class="font-normal text-start text-neutral-400"
-            [ngClass]="column.width ? column.width : ''"
-          >
-            <app-filter-menu
-              [label]="column.name"
-              [enableSort]="!!column?.sort"
-              [defaultOptions]="appliedFilterList[column.id]"
-              [options]="salesFiltersOptions[column.id]"
-              [sortBy]="sortBy === column.id"
-              (closeFilterMenu)="onSelectedFilters($event, column.id)"
-              (sortByChanged)="onUpdateParameters(column.id, $event)"
-            />
-          </th>
-          }
+          <ng-container *ngTemplateOutlet="tableHeader"></ng-container>
         </tr>
       </thead>
       <tbody>
-        @for (logList of data; track $index) {
-        <tr>
-          <td colspan="8">
-            <div class="flex items-center py-2 text-xs gap-x-4">
-              <div class="font-semibold">12 Jan 2012</div>
-              <div class="text-neutral-400">
-                {{ "2023-12-14T00:00:00.000Z" | relativeDate }}
-              </div>
-              <div class="text-neutral-400">14 Open</div>
-              <div class="flex-1 border border-neutral-200 h-1/2"></div>
-            </div>
-          </td>
-        </tr>
-
-        <tr class="text-slate-800">
-          <td>
-            {{ "2023-12-15T20:30:00.000Z" | localDateTime : "DD/MM/YYYY" }}
-          </td>
-          <td class="text-sky-800">FlytBase Pvt</td>
-          <td>
-            <div class="flex items-center gap-x-1">
-              <mat-icon class="mb-1 text-xl">{{
-                taskTypeIcon[logList.taskType]
-              }}</mat-icon>
-              <span>{{ logList.taskType }}</span>
-            </div>
-          </td>
-          <td>{{ "2023-12-15T20:30:00.000Z" | localDateTime : "h:mm A" }}</td>
-          <td>Aniket Satish Mane</td>
-          <td class="pr-4 truncate">
-            @if(logList.notes){
-            {{ logList.notes }}
-            } @else{
-            <ng-container
-              *ngTemplateOutlet="addNotesTemplate; context: { data: logList }"
-            ></ng-container>
-            }
-          </td>
-
-          <td [ngClass]="logList.status ? 'text-orange-500' : 'text-sky-800'">
-            {{ taskStatusTranslation[logList.status] }}
-          </td>
-          <td>
-            <app-table-row-action
-              (selectedMenuItem)="rowActions($event, logList)"
-              [status]="
-                logList.status
-                  ? taskStatusTranslation[taskStatus.CLOSED]
-                  : taskStatusTranslation[taskStatus.OPEN]
-              "
-            />
-          </td>
-        </tr>
-        }
+        <ng-container *ngTemplateOutlet="tableBody"></ng-container>
       </tbody>
     </table>
   </div>
 </ng-template>
 
+<!-- Table Header Template -->
+<ng-template #tableHeader>
+  @for (column of tableColumns; track $index) {
+  <th
+    class="font-normal text-start text-neutral-400"
+    [ngClass]="column.width ? column.width : ''"
+  >
+    <app-filter-menu
+      [label]="column.name"
+      [enableSort]="!!column?.sort"
+      [defaultOptions]="appliedFilterList[column.id]"
+      [options]="salesFiltersOptions[column.id]"
+      [sortBy]="sortBy === column.id"
+      (closeFilterMenu)="onSelectedFilters($event, column.id)"
+      (sortByChanged)="onUpdateParameters(column.id, $event)"
+    />
+  </th>
+  }
+</ng-template>
+
+<!-- Table Body Template -->
+<ng-template #tableBody>
+  @for (logList of tableList; track $index) {
+  <tr>
+    <td colspan="8">
+      <div class="flex items-center py-2 text-xs gap-x-4">
+        <div class="font-semibold">{{ logList.entity }}</div>
+        <div class="text-neutral-400" *ngIf="sortBy === columnIds.DATE">
+          {{ logList.entity | relativeDate }}
+        </div>
+        <div class="text-neutral-400">{{ logList.openCount }}</div>
+        <div class="flex-1 border border-neutral-200 h-1/2"></div>
+      </div>
+    </td>
+  </tr>
+
+  @if(logList.list.length > 0){ @for (list of logList.list; track $index) {
+  <ng-container
+    *ngTemplateOutlet="tableRow; context: { data: list }"
+  ></ng-container>
+  } }@else {
+  <tr>
+    <td colspan="8" class="py-4 text-center text-neutral-500">
+      {{ isFetch ? "No sales log found" : "Loading sales log, please wait..." }}
+    </td>
+  </tr>
+  }}
+</ng-template>
+
+<!-- Table Row Template -->
+<ng-template #tableRow let-data="data">
+  <tr class="text-slate-800">
+    <td>
+      {{ data.date | localDateTime : "DD/MM/YYYY" }}
+    </td>
+    <td class="text-sky-800">{{ data.entityName }}</td>
+    <td>
+      <div class="flex items-center gap-x-1">
+        <mat-icon class="mb-1 text-xl">{{
+          taskTypeIcon[data.taskType]
+        }}</mat-icon>
+        <span>{{ data.taskType }}</span>
+      </div>
+    </td>
+    <td>{{ data.date | localDateTime : "h:mm A" }}</td>
+    <td>{{ data.contactPerson }}</td>
+    <td class="pr-4 truncate">
+      @if(data.notes){
+      {{ data.notes }}
+      } @else {
+      <ng-container
+        *ngTemplateOutlet="addNotesTemplate; context: { data: data }"
+      ></ng-container>
+      }
+    </td>
+    <td [ngClass]="data.status ? 'text-orange-500' : 'text-sky-800'">
+      {{ taskStatusTranslation[data.status] }}
+    </td>
+    <td>
+      <app-table-row-action
+        (selectedMenuItem)="rowActions($event, data)"
+        [status]="
+          data.status
+            ? taskStatusTranslation[taskStatus.CLOSED]
+            : taskStatusTranslation[taskStatus.OPEN]
+        "
+      />
+    </td>
+  </tr>
+</ng-template>
+
+<!-- Add Notes Template -->
 <ng-template #addNotesTemplate let-data="data">
   <button
     class="flex items-center justify-center px-3 py-2 text-sm font-light rounded-md gap-x-1 bg-neutral-100"

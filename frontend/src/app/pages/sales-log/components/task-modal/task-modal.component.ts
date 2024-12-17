@@ -69,7 +69,7 @@ export class TaskModalComponent implements OnInit, OnDestroy {
         Validators.required,
         Validators.pattern(/^[0-9]{10,15}$/),
       ]),
-      note: new FormControl(this.taskInfo?.note ?? ''),
+      notes: new FormControl(this.taskInfo?.notes ?? ''),
     });
     this.taskTime = this.taskInfo?.date ?? '';
   }
